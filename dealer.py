@@ -13,10 +13,19 @@ class Dealer:
         self.cards_in_hand = []
         self.hand_total = 0
         self.hand_total_alt = 0
+        self.true_hand_total = 0
+        self.true_hand_decided = False
+        self.natural = False
+        self.tie = False
+        self.hole_down = True
 
     def full_shuffle(self):
         for x in range(5):
-            self.deck = gf.shuffle(self.full_deck)
+            self.full_deck = gf.shuffle(self.full_deck)
+
+    def reset_shuffle(self):
+        self.full_deck = self.deck + self.deck + self.deck + self.deck + self.deck + self.deck
+        self.full_shuffle()
 
     def initial_deal(self, player):
         for i in range(2):
@@ -27,7 +36,28 @@ class Dealer:
         player.cards_in_hand = []
         self.cards_in_hand = []
 
-    def dealer_move(self):
+    def dealer_move(self, player):
+        print("--Dealer Turn--")
         gf.calc_hand_total(self)
-        print(self.hand_total)
-        print(self.hand_total_alt)
+        self.hole_down = False
+        gf.show_hands(player, self)
+        while not self.true_hand_decided:
+            if 17 <= self.hand_total <= 21:
+                self.true_hand_total = self.hand_total
+                self.true_hand_decided = True
+            elif self.hand_total < 17 or self.hand_total_alt < 17:
+                gf.hit(self.cards_in_hand, self)
+                gf.calc_hand_total(self)
+                gf.show_hands(player, self)
+            else:
+                self.true_hand_total = self.hand_total_alt
+                self.true_hand_decided = True
+        if gf.check_bust(self.true_hand_total):
+            player.winner = True
+
+    def maybe_natural(self, player):
+        card = self.cards_in_hand[0]
+        num = card[-1]
+        if num == '0' or num == 'J' or num == 'Q' or num == 'K' or num == 'A':
+            self.hole_down = False
+            gf.show_hands(player, self)
