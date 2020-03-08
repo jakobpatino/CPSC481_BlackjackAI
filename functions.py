@@ -25,24 +25,8 @@ def card_values(card):
     value = card[-1]
     if value == '0' or value == 'J' or value == 'Q' or value == 'K':
         return 10
-    elif value == '1':
-        return 1
-    elif value == '2':
-        return 2
-    elif value == '3':
-        return 3
-    elif value == '4':
-        return 4
-    elif value == '5':
-        return 5
-    elif value == '6':
-        return 6
-    elif value == '7':
-        return 7
-    elif value == '8':
-        return 8
-    elif value == '9':
-        return 9
+    elif value >= '1' or value <= '9':   #EDIT: Shortened if statements values 1-9
+        return int(value)
     else:
         return 0
 
@@ -139,8 +123,9 @@ def reset_round(player, dealer):
 
 
 def show_hands(player, dealer):
-    print("player:" + str(player.cards_in_hand))
+    print("player:" + str(player.cards_in_hand), ": Hand =", player.hand_total)    # EDIT: temporary numeral value indicator for hand
     if dealer.hole_down:
-        print("dealer: " + str(dealer.cards_in_hand[0]))
+        print("dealer: " + str(dealer.cards_in_hand[0]), ": Hand =", dealer.hand_total)
     else:
-        print("dealer" + str(dealer.cards_in_hand))
+        print("dealer" + str(dealer.cards_in_hand), ": Hand =", dealer.hand_total)
+
