@@ -13,6 +13,19 @@ class Dealer:
         self.cards_in_hand = []
         self.hand_total = 0
         self.hand_total_alt = 0
+        self.full_deck_total = 312
+
+        self.tens = 96
+        self.nines = 24
+        self.eights = 24
+        self.sevens = 24
+        self.sixes = 24
+        self.fives = 24
+        self.fours = 24
+        self.threes = 24
+        self.twos = 24
+        self.aces = 24
+
         self.true_hand_total = 0
         self.true_hand_decided = False
         self.natural = False
@@ -28,6 +41,10 @@ class Dealer:
         self.full_shuffle()
 
     def initial_deal(self, player):
+        gf.remove_from_deck_count(self.full_deck[0], self)
+        gf.remove_from_deck_count(self.full_deck[1], self)
+        gf.remove_from_deck_count(self.full_deck[2], self)
+        gf.print_count(self)
         for i in range(2):
             player.cards_in_hand.append(self.full_deck.pop(0))
             self.cards_in_hand.append(self.full_deck.pop(0))
@@ -40,6 +57,8 @@ class Dealer:
         print("--Dealer Turn--")
         gf.calc_hand_total(self)
         self.hole_down = False
+        gf.remove_from_deck_count(self.cards_in_hand[1], self)
+        gf.print_count(self)
         gf.show_hands(player, self)
         while not self.true_hand_decided:
             if 17 <= self.hand_total <= 21:
@@ -60,4 +79,6 @@ class Dealer:
         num = card[-1]
         if num == '0' or num == 'J' or num == 'Q' or num == 'K' or num == 'A':
             self.hole_down = False
+            gf.remove_from_deck_count(self.cards_in_hand[1], self)
+            gf.print_count(self)
             gf.show_hands(player, self)
