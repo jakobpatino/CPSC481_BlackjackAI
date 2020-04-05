@@ -230,4 +230,57 @@ def calc_aces_prob(dealer):
     probability = dealer.aces / dealer.full_deck_total
     return probability
 
+'''
+# Recently added: determine hit function
+def determine_if_hit(player,dealer):
+    win_window = 21 - player.hand_total; #win_window = wiggle room player has to draw in card values to win or stay safe
+    win_chance = 0.0; # probablility of winning, given the dealer hand assumption (or chance to be safe at sub 21)
+
+    if win_window >= 10:
+        return 1;  # if player can draw any card safely, return 1 to hit
+    if win_window >= 9:
+        win_chance += calc_nine_prob(dealer);
+    if win_window >= 8:
+        win_chance += calc_eight_prob(dealer);
+    if win_window >= 7:
+        win_chance += calc_seven_prob(dealer);
+    if win_window >= 6:
+        win_chance += calc_six_prob(dealer);
+    if win_window >= 5:
+        win_chance += calc_five_prob(dealer);
+    if win_window >= 4:
+        win_chance += calc_four_prob(dealer);
+    if win_window >= 3:
+        win_chance += calc_three_prob(dealer);
+    if win_window >= 2:
+        win_chance += calc_two_prob(dealer);
+    if win_window >= 1:
+        win_chance += calc_aces_prob(dealer);
+
+    if player.assumption >= 17: # probablility of winning if dealer has >= 17 (assumed)
+
+        if win_chance > 0.5:
+            return 1; # true (hit)
+        else:
+            return 0; #false (stay)
+
+    elif player.assumption < 17:
+        bust_chance_dealer = 0.0; # chance the dealer has to bust assuming face down is 10
+
+        # STARTING at 6, since highest value (16) only busts with a 6, 15 busts with 7, etc
+        if (player.assumption + 6) > 21:
+            bust_chance_dealer += calc_six_prob(dealer);
+        if (player.assumption + 7) > 21:
+            bust_chance_dealer += calc_seven_prob(dealer);
+        if (player.assumption + 8) > 21:
+            bust_chance_dealer += calc_eight_prob(dealer);
+        if (player.assumption + 9) > 21:
+            bust_chance_dealer += calc_nine_prob(dealer);
+        if (player.assumption + 10) > 21:
+            bust_chance_dealer += calc_ten_prob(dealer);
+
+        if win_chance > bust_chance_dealer:# if dealer chance to bust is higher than chance to stay safely, player stays
+            return 1;
+        else:
+            return 0; '''
  
