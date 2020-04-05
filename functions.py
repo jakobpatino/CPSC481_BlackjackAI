@@ -25,6 +25,8 @@ def card_values(card):
     value = card[-1]
     if value == '0' or value == 'J' or value == 'Q' or value == 'K':
         return 10
+    elif value == '1':
+        return 1
     elif value == '2':
         return 2
     elif value == '3':
@@ -47,7 +49,7 @@ def card_values(card):
 def remove_from_deck_count(card, dealer):
     value = card_values(card)
     dealer.full_deck_total -= 1
-    if value == 0:
+    if value == 1:
         dealer.aces -= 1
     elif value == 2:
         dealer.twos -= 1
