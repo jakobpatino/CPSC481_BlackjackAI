@@ -21,7 +21,7 @@ def run_game():
         if player.natural or dealer.natural:
             gf.natural_winner(player, dealer)
         if not player.winner and not dealer.winner and not dealer.tie:
-            player.player_turn(dealer)
+            player.ai_turn(dealer)
             if not dealer.winner:
                 dealer.dealer_move(player)
                 if not player.winner:
@@ -29,11 +29,13 @@ def run_game():
         gf.declare_winner(player, dealer)
         gf.reset_round(player, dealer)
         round_num += 1
-        if round_num % 3 == 0:
+        if round_num % 10 == 0:
             dealer.reset_shuffle()
-        if round_num == 7:
+        if round_num == 1000:
             in_progress = False
         print("----------------------------------------------")
-
+    print(player.win_count)
+    print(player.tie_count)
+    print(player.dealer_win_count)
 
 run_game()
