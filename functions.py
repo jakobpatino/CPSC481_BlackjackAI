@@ -14,6 +14,7 @@ def shuffle(deck):
         temp = deck[0]
         deck[0] = deck[num]
         deck[num] = temp
+
     return deck
 
 
@@ -95,12 +96,57 @@ def calc_hand_total(hand):
             hand.hand_total += card_values(x)
             hand.hand_total_alt += card_values(x)
 
+def calc_win_total(dealer, bust):
+    win_total = 0
+
+    if bust == 6:
+        win_total = dealer.full_deck_total - (dealer.tens + dealer.nines + dealer.eights + dealer.sevens + dealer.sixes)
+    elif bust == 7:
+        win_total = dealer.full_deck_total - (dealer.tens + dealer.nines + dealer.eights + dealer.sevens)
+    elif bust == 8:
+        win_total = dealer.full_deck_total - (dealer.tens + dealer.nines + dealer.eights)
+    elif bust == 9:
+        win_total = dealer.full_deck_total - (dealer.tens + dealer.nines)
+    elif bust == 10:
+        win_total = dealer.full_deck_total - dealer.tens
+    else:
+        win_total = dealer.full_deck_total
+
+    return win_total
+
+def calc_safe_hit(dealer, num, bust):
+    safe = 0
+
+    if num == 10:
+        safe = calc_win_total(dealer, bust)
+    elif num == 9:
+        safe = dealer.nines + dealer.eights + dealer.sevens + dealer.sixes + dealer.fives + dealer.fours + dealer.threes + dealer.twos + dealer.aces
+    elif num == 8:
+        safe = dealer.eights + dealer.sevens + dealer.sixes + dealer.fives + dealer.fours + dealer.threes + dealer.twos + dealer.aces
+    elif num == 7:
+        safe = dealer.sevens + dealer.sixes + dealer.fives + dealer.fours + dealer.threes + dealer.twos + dealer.aces
+    elif num == 6:
+        safe = dealer.sixes + dealer.fives + dealer.fours + dealer.threes + dealer.twos + dealer.aces
+    elif num == 5:
+        safe = dealer.fives + dealer.fours + dealer.threes + dealer.twos + dealer.aces
+    elif num == 4:
+        safe =  dealer.fours + dealer.threes + dealer.twos + dealer.aces
+    elif num == 3:
+        safe = dealer.threes + dealer.twos + dealer.aces
+    elif num == 2:
+        safe = dealer.twos + dealer.aces
+
+    return safe
+
+
 
 def hit(hand, dealer):
     remove_from_deck_count(dealer.full_deck[0], dealer)
     hand.append(dealer.full_deck.pop(0))
-    print_count(dealer)
+    #print_count(dealer)
 
+def double_down(hand, dealer, player):
+    hit(hand, dealer)
 
 def check_naturals(player, dealer):
     calc_hand_total(player)
@@ -110,14 +156,14 @@ def check_naturals(player, dealer):
         if dealer.hole_down:
             dealer.hole_down = False
             remove_from_deck_count(dealer.cards_in_hand[1], dealer)
-            print_count(dealer)
+            #print_count(dealer)
             show_hands(player, dealer)
     if dealer.hand_total == 21:
         dealer.natural = True
         if dealer.hole_down:
             dealer.hole_down = False
             remove_from_deck_count(dealer.cards_in_hand[1], dealer)
-            print_count(dealer)
+           # print_count(dealer)
             show_hands(player, dealer)
 
 
@@ -158,10 +204,13 @@ def assign_winner(player, dealer):
 def declare_winner(player, dealer):
     if not player.winner and not dealer.winner and dealer.tie:
         print("--TIE--")
+        player.tie_count += 1
     elif not player.winner and dealer.winner and not dealer.tie:
         print("--DEALER WIN--")
+        player.dealer_win_count += 1
     elif player.winner and not dealer.winner and not dealer.tie:
         print("--PLAYER WIN--")
+        player.win_count += 1
 
 
 def reset_round(player, dealer):
@@ -195,92 +244,84 @@ def calc_ten_prob(dealer):
     return probability
 
 def calc_nine_prob(dealer):
-    probability = dealer.nines / dealer.full_deck_total
+    probability = (dealer.nines + dealer.tens) / dealer.full_deck_total
     return probability
 
 def calc_eight_prob(dealer):
-    probability = dealer.eights / dealer.full_deck_total
+    probability = (dealer.eights + dealer.nines + dealer.tens) / dealer.full_deck_total
     return probability
 
 def calc_seven_prob(dealer):
-    probability = dealer.sevens / dealer.full_deck_total
+    probability = (dealer.sevens + dealer.eights + dealer.nines + dealer.tens) / dealer.full_deck_total
     return probability
 
 def calc_six_prob(dealer):
-    probability = dealer.sixes / dealer.full_deck_total
+    probability = (dealer.sixes + dealer.sevens + dealer.eights + dealer.nines + dealer.tens) / dealer.full_deck_total
     return probability
 
 def calc_five_prob(dealer):
-    probability = dealer.fives / dealer.full_deck_total
+    probability = (dealer.fives + dealer.sixes + dealer.sevens + dealer.eights
+                   + dealer.nines + dealer.tens) / dealer.full_deck_total
     return probability
 
 def calc_four_prob(dealer):
-    probability = dealer.fours / dealer.full_deck_total
+    probability = (dealer.fours + dealer.fives + dealer.sixes + dealer.sevens + dealer.eights
+                   + dealer.nines + dealer.tens) / dealer.full_deck_total
     return probability
 
 def calc_three_prob(dealer):
-    probability = dealer.threes / dealer.full_deck_total
+    probability = (dealer.threes + dealer.fours + dealer.fives + dealer.sixes + dealer.sevens + dealer.eights
+                   + dealer.nines + dealer.tens) / dealer.full_deck_total
     return probability
 
 def calc_two_prob(dealer):
-    probability = dealer.twos / dealer.full_deck_total
+    probability = (dealer.twos + dealer.threes + dealer.fours + dealer.fives + dealer.sixes + dealer.sevens + dealer.eights
+                   + dealer.nines + dealer.tens) / dealer.full_deck_total
     return probability
 
 def calc_aces_prob(dealer):
-    probability = dealer.aces / dealer.full_deck_total
+    probability = (dealer.aces + dealer.twos + dealer.threes + dealer.fours + dealer.fives + dealer.sixes + dealer.sevens + dealer.eights
+                   + dealer.nines + dealer.tens) / dealer.full_deck_total
     return probability
 
-'''
-# Recently added: determine hit function
-def determine_if_hit(player,dealer):
-    win_window = 21 - player.hand_total; #win_window = wiggle room player has to draw in card values to win or stay safe
-    win_chance = 0.0; # probablility of winning, given the dealer hand assumption (or chance to be safe at sub 21)
+def bust_prob(hand, player, dealer):
+    bust = 22 - hand
+    prob = 1.0
 
-    if win_window >= 10:
-        return 1;  # if player can draw any card safely, return 1 to hit
-    if win_window >= 9:
-        win_chance += calc_nine_prob(dealer);
-    if win_window >= 8:
-        win_chance += calc_eight_prob(dealer);
-    if win_window >= 7:
-        win_chance += calc_seven_prob(dealer);
-    if win_window >= 6:
-        win_chance += calc_six_prob(dealer);
-    if win_window >= 5:
-        win_chance += calc_five_prob(dealer);
-    if win_window >= 4:
-        win_chance += calc_four_prob(dealer);
-    if win_window >= 3:
-        win_chance += calc_three_prob(dealer);
-    if win_window >= 2:
-        win_chance += calc_two_prob(dealer);
-    if win_window >= 1:
-        win_chance += calc_aces_prob(dealer);
+    if bust == 6:
+        prob = calc_six_prob(dealer)
+    elif bust == 7:
+        prob = calc_seven_prob(dealer)
+    elif bust == 8:
+        prob = calc_eight_prob(dealer)
+    elif bust == 9:
+        prob = calc_nine_prob(dealer)
+    elif bust == 10:
+        prob = calc_ten_prob(dealer)
+    else:
+        prob = 0.0
 
-    if player.assumption >= 17: # probablility of winning if dealer has >= 17 (assumed)
+    return prob
 
-        if win_chance > 0.5:
-            return 1; # true (hit)
-        else:
-            return 0; #false (stay)
+def hit_or_dd(hand, hand_alt, true_assumption, cards_in_hand, dealer, player):
+    bust = 22 - hand
+    decision = " "
+    not_win_prob = 0.0
+    lowest_beat = 0.0
 
-    elif player.assumption < 17:
-        bust_chance_dealer = 0.0; # chance the dealer has to bust assuming face down is 10
+    if (hand == hand_alt or (hand == hand_alt and hand > 21)) and not hand > 21:
+        lowest_beat = true_assumption - hand_alt + 1
+    else:
+        lowest_beat = true_assumption - hand + 1
 
-        # STARTING at 6, since highest value (16) only busts with a 6, 15 busts with 7, etc
-        if (player.assumption + 6) > 21:
-            bust_chance_dealer += calc_six_prob(dealer);
-        if (player.assumption + 7) > 21:
-            bust_chance_dealer += calc_seven_prob(dealer);
-        if (player.assumption + 8) > 21:
-            bust_chance_dealer += calc_eight_prob(dealer);
-        if (player.assumption + 9) > 21:
-            bust_chance_dealer += calc_nine_prob(dealer);
-        if (player.assumption + 10) > 21:
-            bust_chance_dealer += calc_ten_prob(dealer);
+    not_win_prob = calc_safe_hit(dealer, lowest_beat, bust) / calc_win_total(dealer, bust)
 
-        if win_chance > bust_chance_dealer:# if dealer chance to bust is higher than chance to stay safely, player stays
-            return 1;
-        else:
-            return 0; '''
- 
+    if not_win_prob >= .5:
+        hit(cards_in_hand, dealer)
+        decision = "HIT"
+    else:
+        double_down(cards_in_hand, dealer, player)
+        decision = "DD"
+
+    return decision
+
