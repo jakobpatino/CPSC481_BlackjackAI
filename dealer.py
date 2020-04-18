@@ -1,5 +1,6 @@
 import functions as gf
 
+
 class Dealer:
 
     def __init__(self):
@@ -54,7 +55,7 @@ class Dealer:
         gf.remove_from_deck_count(self.full_deck[0], self)
         gf.remove_from_deck_count(self.full_deck[1], self)
         gf.remove_from_deck_count(self.full_deck[2], self)
-        #gf.print_count(self)
+        # gf.print_count(self)
         for i in range(2):
             player.cards_in_hand.append(self.full_deck.pop(0))
             self.cards_in_hand.append(self.full_deck.pop(0))
@@ -68,7 +69,7 @@ class Dealer:
         gf.calc_hand_total(self)
         self.hole_down = False
         gf.remove_from_deck_count(self.cards_in_hand[1], self)
-        #gf.print_count(self)
+        # gf.print_count(self)
         gf.show_hands(player, self)
         while not self.true_hand_decided:
             if 17 <= self.hand_total <= 21:
@@ -90,5 +91,6 @@ class Dealer:
         if num == '0' or num == 'J' or num == 'Q' or num == 'K' or num == 'A':
             self.hole_down = False
             gf.remove_from_deck_count(self.cards_in_hand[1], self)
-            #gf.print_count(self)
+            # gf.print_count(self)
             gf.show_hands(player, self)
+how_hands(player, self)
