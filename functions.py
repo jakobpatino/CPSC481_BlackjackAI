@@ -47,6 +47,7 @@ def card_values(card):
     else:
         return 0
 
+
 def remove_from_deck_count(card, dealer):
     value = card_values(card)
     dealer.full_deck_total -= 1
@@ -70,6 +71,7 @@ def remove_from_deck_count(card, dealer):
         dealer.nines -= 1
     elif value == 10:
         dealer.tens -= 1
+
 
 def print_count(dealer):
     print(dealer.full_deck_total)
@@ -96,6 +98,7 @@ def calc_hand_total(hand):
             hand.hand_total += card_values(x)
             hand.hand_total_alt += card_values(x)
 
+
 def calc_win_total(dealer, bust):
     win_total = 0
 
@@ -114,15 +117,18 @@ def calc_win_total(dealer, bust):
 
     return win_total
 
+
 def calc_safe_hit(dealer, num, bust):
     safe = 0
 
     if num == 10:
         safe = calc_win_total(dealer, bust)
     elif num == 9:
-        safe = dealer.nines + dealer.eights + dealer.sevens + dealer.sixes + dealer.fives + dealer.fours + dealer.threes + dealer.twos + dealer.aces
+        safe = dealer.nines + dealer.eights + dealer.sevens + dealer.sixes + dealer.fives\
+               + dealer.fours + dealer.threes + dealer.twos + dealer.aces
     elif num == 8:
-        safe = dealer.eights + dealer.sevens + dealer.sixes + dealer.fives + dealer.fours + dealer.threes + dealer.twos + dealer.aces
+        safe = dealer.eights + dealer.sevens + dealer.sixes + dealer.fives + dealer.fours\
+               + dealer.threes + dealer.twos + dealer.aces
     elif num == 7:
         safe = dealer.sevens + dealer.sixes + dealer.fives + dealer.fours + dealer.threes + dealer.twos + dealer.aces
     elif num == 6:
@@ -130,7 +136,7 @@ def calc_safe_hit(dealer, num, bust):
     elif num == 5:
         safe = dealer.fives + dealer.fours + dealer.threes + dealer.twos + dealer.aces
     elif num == 4:
-        safe =  dealer.fours + dealer.threes + dealer.twos + dealer.aces
+        safe = dealer.fours + dealer.threes + dealer.twos + dealer.aces
     elif num == 3:
         safe = dealer.threes + dealer.twos + dealer.aces
     elif num == 2:
@@ -139,14 +145,15 @@ def calc_safe_hit(dealer, num, bust):
     return safe
 
 
-
 def hit(hand, dealer):
     remove_from_deck_count(dealer.full_deck[0], dealer)
     hand.append(dealer.full_deck.pop(0))
-    #print_count(dealer)
+    # print_count(dealer)
 
-def double_down(hand, dealer, player):
+
+def double_down(hand, dealer):
     hit(hand, dealer)
+
 
 def check_naturals(player, dealer):
     calc_hand_total(player)
@@ -156,14 +163,14 @@ def check_naturals(player, dealer):
         if dealer.hole_down:
             dealer.hole_down = False
             remove_from_deck_count(dealer.cards_in_hand[1], dealer)
-            #print_count(dealer)
+            # print_count(dealer)
             show_hands(player, dealer)
     if dealer.hand_total == 21:
         dealer.natural = True
         if dealer.hole_down:
             dealer.hole_down = False
             remove_from_deck_count(dealer.cards_in_hand[1], dealer)
-           # print_count(dealer)
+            # print_count(dealer)
             show_hands(player, dealer)
 
 
@@ -243,48 +250,60 @@ def calc_ten_prob(dealer):
     probability = dealer.tens / dealer.full_deck_total
     return probability
 
+
 def calc_nine_prob(dealer):
     probability = (dealer.nines + dealer.tens) / dealer.full_deck_total
     return probability
+
 
 def calc_eight_prob(dealer):
     probability = (dealer.eights + dealer.nines + dealer.tens) / dealer.full_deck_total
     return probability
 
+
 def calc_seven_prob(dealer):
     probability = (dealer.sevens + dealer.eights + dealer.nines + dealer.tens) / dealer.full_deck_total
     return probability
 
+
 def calc_six_prob(dealer):
     probability = (dealer.sixes + dealer.sevens + dealer.eights + dealer.nines + dealer.tens) / dealer.full_deck_total
     return probability
+
 
 def calc_five_prob(dealer):
     probability = (dealer.fives + dealer.sixes + dealer.sevens + dealer.eights
                    + dealer.nines + dealer.tens) / dealer.full_deck_total
     return probability
 
+
 def calc_four_prob(dealer):
     probability = (dealer.fours + dealer.fives + dealer.sixes + dealer.sevens + dealer.eights
                    + dealer.nines + dealer.tens) / dealer.full_deck_total
     return probability
+
 
 def calc_three_prob(dealer):
     probability = (dealer.threes + dealer.fours + dealer.fives + dealer.sixes + dealer.sevens + dealer.eights
                    + dealer.nines + dealer.tens) / dealer.full_deck_total
     return probability
 
+
 def calc_two_prob(dealer):
-    probability = (dealer.twos + dealer.threes + dealer.fours + dealer.fives + dealer.sixes + dealer.sevens + dealer.eights
+    probability = (dealer.twos + dealer.threes + dealer.fours + dealer.fives + dealer.sixes + dealer.sevens
+                   + dealer.eights
                    + dealer.nines + dealer.tens) / dealer.full_deck_total
     return probability
+
 
 def calc_aces_prob(dealer):
-    probability = (dealer.aces + dealer.twos + dealer.threes + dealer.fours + dealer.fives + dealer.sixes + dealer.sevens + dealer.eights
+    probability = (dealer.aces + dealer.twos + dealer.threes + dealer.fours + dealer.fives + dealer.sixes
+                   + dealer.sevens + dealer.eights
                    + dealer.nines + dealer.tens) / dealer.full_deck_total
     return probability
 
-def bust_prob(hand, player, dealer):
+
+def bust_prob(hand, dealer):
     bust = 22 - hand
     prob = 1.0
 
@@ -303,6 +322,7 @@ def bust_prob(hand, player, dealer):
 
     return prob
 
+
 def hit_or_dd(hand, hand_alt, true_assumption, cards_in_hand, dealer, player):
     bust = 22 - hand
     decision = " "
@@ -320,7 +340,7 @@ def hit_or_dd(hand, hand_alt, true_assumption, cards_in_hand, dealer, player):
         hit(cards_in_hand, dealer)
         decision = "HIT"
     else:
-        double_down(cards_in_hand, dealer, player)
+        double_down(cards_in_hand, dealer)
         decision = "DD"
 
     return decision
