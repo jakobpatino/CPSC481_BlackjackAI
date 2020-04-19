@@ -93,4 +93,3 @@ class Dealer:
             gf.remove_from_deck_count(self.cards_in_hand[1], self)
             # gf.print_count(self)
             gf.show_hands(player, self)
-show_hands(player, self)
