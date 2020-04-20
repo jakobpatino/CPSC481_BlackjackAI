@@ -168,8 +168,8 @@ def hit(hand, dealer, player):
     # print_count(dealer)
 
 
-def double_down(hand, dealer):
-    hit(hand, dealer)
+def double_down(hand, dealer,player):
+    hit(hand, dealer,player)
 
 
 def check_naturals(player, dealer):
@@ -357,7 +357,7 @@ def hit_or_dd(hand, hand_alt, true_assumption, cards_in_hand, dealer, player):
         hit(cards_in_hand, dealer,player)
         decision = "HIT"
     else:
-        double_down(cards_in_hand, dealer)
+        double_down(cards_in_hand, dealer,player)
         decision = "DD"
 
     return decision
