@@ -4,7 +4,6 @@ import functions as gf
 class Player:
 
     def __init__(self):
-        self.money = 0
         self.cards_in_hand = []
         self.winner = False
         self.hand_total = 0
@@ -15,6 +14,15 @@ class Player:
         self.win_count = 0
         self.tie_count = 0
         self.dealer_win_count = 0
+
+        # 2-6 = +1     7-9 = +0      10 and Ace = -1
+        self.bankroll = 5000 # starting amt of money
+        self.betting_unit = 5 # starting betting unit
+        self.betting_unit = 1 #betting unit (default 1)
+        self.running_total = 0
+        self.true_total = 0
+        self.card_total = 0 #total cards accounted for so far
+
 
     # temporary manual input turn
 
