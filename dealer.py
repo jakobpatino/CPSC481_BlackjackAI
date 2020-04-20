@@ -52,9 +52,9 @@ class Dealer:
         self.aces = 24
 
     def initial_deal(self, player):
-        gf.remove_from_deck_count(self.full_deck[0], self)
-        gf.remove_from_deck_count(self.full_deck[1], self)
-        gf.remove_from_deck_count(self.full_deck[2], self)
+        gf.remove_from_deck_count(self.full_deck[0], self, player)
+        gf.remove_from_deck_count(self.full_deck[1], self, player)
+        gf.remove_from_deck_count(self.full_deck[2], self, player)
         # gf.print_count(self)
         for i in range(2):
             player.cards_in_hand.append(self.full_deck.pop(0))
@@ -68,7 +68,7 @@ class Dealer:
         print("--Dealer Turn--")
         gf.calc_hand_total(self)
         self.hole_down = False
-        gf.remove_from_deck_count(self.cards_in_hand[1], self)
+        gf.remove_from_deck_count(self.cards_in_hand[1], self,player)
         # gf.print_count(self)
         gf.show_hands(player, self)
         while not self.true_hand_decided:
@@ -76,7 +76,7 @@ class Dealer:
                 self.true_hand_total = self.hand_total
                 self.true_hand_decided = True
             elif self.hand_total < 17 or self.hand_total_alt < 17:
-                gf.hit(self.cards_in_hand, self)
+                gf.hit(self.cards_in_hand, self, player)
                 gf.calc_hand_total(self)
                 gf.show_hands(player, self)
             else:
@@ -90,6 +90,6 @@ class Dealer:
         num = card[-1]
         if num == '0' or num == 'J' or num == 'Q' or num == 'K' or num == 'A':
             self.hole_down = False
-            gf.remove_from_deck_count(self.cards_in_hand[1], self)
+            gf.remove_from_deck_count(self.cards_in_hand[1], self,player)
             # gf.print_count(self)
             gf.show_hands(player, self)
