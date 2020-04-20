@@ -48,29 +48,46 @@ def card_values(card):
         return 0
 
 
-def remove_from_deck_count(card, dealer):
+def remove_from_deck_count(card, dealer, player):
     value = card_values(card)
     dealer.full_deck_total -= 1
     if value == 1:
         dealer.aces -= 1
+        player.card_total +=1
+        player.running_total -=1;
     elif value == 2:
         dealer.twos -= 1
+        player.card_total +=1
+        player.running_total +=1;
     elif value == 3:
         dealer.threes -= 1
+        player.card_total +=1
+        player.running_total +=1;
     elif value == 4:
         dealer.fours -= 1
+        player.card_total +=1
+        player.running_total +=1;
     elif value == 5:
         dealer.fives -= 1
+        player.card_total +=1
+        player.running_total +=1;
     elif value == 6:
         dealer.sixes -= 1
+        player.card_total +=1
+        player.running_total +=1;
     elif value == 7:
         dealer.sevens -= 1
+        player.card_total +=1
     elif value == 8:
         dealer.eights -= 1
+        player.card_total +=1
     elif value == 9:
         dealer.nines -= 1
+        player.card_total +=1
     elif value == 10:
         dealer.tens -= 1
+        player.card_total +=1
+        player.running_total -=1;
 
 
 def print_count(dealer):
@@ -145,8 +162,8 @@ def calc_safe_hit(dealer, num, bust):
     return safe
 
 
-def hit(hand, dealer):
-    remove_from_deck_count(dealer.full_deck[0], dealer)
+def hit(hand, dealer, player):
+    remove_from_deck_count(dealer.full_deck[0], dealer, player)
     hand.append(dealer.full_deck.pop(0))
     # print_count(dealer)
 
@@ -162,14 +179,14 @@ def check_naturals(player, dealer):
         player.natural = True
         if dealer.hole_down:
             dealer.hole_down = False
-            remove_from_deck_count(dealer.cards_in_hand[1], dealer)
+            remove_from_deck_count(dealer.cards_in_hand[1], dealer,player)
             # print_count(dealer)
             show_hands(player, dealer)
     if dealer.hand_total == 21:
         dealer.natural = True
         if dealer.hole_down:
             dealer.hole_down = False
-            remove_from_deck_count(dealer.cards_in_hand[1], dealer)
+            remove_from_deck_count(dealer.cards_in_hand[1], dealer,player)
             # print_count(dealer)
             show_hands(player, dealer)
 
@@ -337,11 +354,37 @@ def hit_or_dd(hand, hand_alt, true_assumption, cards_in_hand, dealer, player):
     not_win_prob = calc_safe_hit(dealer, lowest_beat, bust) / calc_win_total(dealer, bust)
 
     if not_win_prob >= .5:
-        hit(cards_in_hand, dealer)
+        hit(cards_in_hand, dealer,player)
         decision = "HIT"
     else:
         double_down(cards_in_hand, dealer)
         decision = "DD"
 
     return decision
+
+def det_true_count(player,dealer):
+    decks_remaining = 6
+    gap = 32; # How many cards missing considers a deck removed from the total.
+    if player.card_total < gap:
+        decks_remaining = 6
+    elif player.card_total > gap:
+        decks_remaining = 5
+    elif player.card_total > (gap + 64):
+        decks_remaining = 4
+    elif player.card_total > (gap + 128):
+        decks_remaining = 3
+    elif player.card_total > (gap + 192):
+        decks_remaining = 2
+    else:
+        decks_remaining = 1
+
+    player.true_total = (player.running_total / decks_remaining)
+
+
+def count_cards(player,dealer): #currently displays card counting stats
+    print("Card counts:")
+    print("Card_Total: {} ".format(player.card_total))
+    print("Running_Total: {} ".format(player.running_total))
+    det_true_count(player,dealer) # updates true total amount (currently no function calls it yet)
+    print("True_Total: {} ".format(player.true_total))
 
