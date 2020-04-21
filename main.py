@@ -30,7 +30,7 @@ def run_game():
         gf.count_cards(player, dealer)
         gf.reset_round(player, dealer)
         round_num += 1
-        if round_num % 10 == 0:
+        if round_num % 5 == 0:
             dealer.reset_shuffle(player)
         if round_num == 100:
             in_progress = False
