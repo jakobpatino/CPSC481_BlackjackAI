@@ -170,6 +170,7 @@ def hit(hand, dealer, player):
 
 def double_down(hand, dealer,player):
     hit(hand, dealer,player)
+    player.betAmount = player.betAmount * 2
 
 
 def check_naturals(player, dealer):
@@ -207,6 +208,18 @@ def natural_winner(player, dealer):
         dealer.winner = True
 
 
+    if(player.winner == True):
+        player.betAmount = player.betAmount * 1.5  # 3/2 Blackjack Pay
+
+
+    '''if(dealer.winner == True):
+        player.bankroll -= player.betAmount
+    elif(player.winner == True):
+        player.bankroll += (player.betAmount * 1.5)      #3/2 Blackjack PAY
+    # else nothing happens, TIE'''
+
+
+
 def check_true_blackjack(hand):
     for x in hand.cards_in_hand:
         if x[0] != 'C' and x[0] != 'S':
@@ -225,16 +238,22 @@ def assign_winner(player, dealer):
         dealer.winner = True
 
 
+
+
+
 def declare_winner(player, dealer):
     if not player.winner and not dealer.winner and dealer.tie:
         print("--TIE--")
         player.tie_count += 1
+        # nothing happens to bankroll
     elif not player.winner and dealer.winner and not dealer.tie:
         print("--DEALER WIN--")
         player.dealer_win_count += 1
+        player.bankroll -= player.betAmount
     elif player.winner and not dealer.winner and not dealer.tie:
         print("--PLAYER WIN--")
         player.win_count += 1
+        player.bankroll += player.betAmount
 
 
 def reset_round(player, dealer):
@@ -359,32 +378,37 @@ def hit_or_dd(hand, hand_alt, true_assumption, cards_in_hand, dealer, player):
     else:
         double_down(cards_in_hand, dealer,player)
         decision = "DD"
+        print("DOUBLE DOWN")
 
     return decision
 
-def det_true_count(player,dealer):
+def det_true_count(player):
     decks_remaining = 6
-    gap = 32; # How many cards missing considers a deck removed from the total.
-    if player.card_total < gap:
-        decks_remaining = 6
-    elif player.card_total > gap:
-        decks_remaining = 5
-    elif player.card_total > (gap + 64):
-        decks_remaining = 4
-    elif player.card_total > (gap + 128):
-        decks_remaining = 3
-    elif player.card_total > (gap + 192):
-        decks_remaining = 2
-    else:
-        decks_remaining = 1
-
     player.true_total = (player.running_total / decks_remaining)
+    if(player.true_total < 1): # true count must be 1 or higher
+        player.true_total = 1
 
 
 def count_cards(player,dealer): #currently displays card counting stats
     print("Card counts:")
     print("Card_Total: {} ".format(player.card_total))
     print("Running_Total: {} ".format(player.running_total))
-    det_true_count(player,dealer) # updates true total amount (currently no function calls it yet)
+    det_true_count(player) # updates true total amount (currently no function calls it yet)
     print("True_Total: {} ".format(player.true_total))
+    print("Bankroll:  {} ".format(player.bankroll))
 
+
+def determine_bet_amt(player):
+    minBet = player.bankroll / 1000
+    maxBet = player.bankroll / 4
+    bettingUnit = player.bankroll / 1000
+    det_true_count(player)
+    optimalBet = bettingUnit * (player.true_total - 1)
+    optimalBet = optimalBet * 1.25  # Bet 25% more as single player/hand
+
+    if(optimalBet > maxBet):
+        return maxBet
+    elif(optimalBet < minBet):
+        return minBet
+    else:
+        return optimalBet
