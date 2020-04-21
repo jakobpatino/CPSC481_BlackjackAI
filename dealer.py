@@ -36,7 +36,7 @@ class Dealer:
         for x in range(5):
             self.full_deck = gf.shuffle(self.full_deck)
 
-    def reset_shuffle(self):
+    def reset_shuffle(self,player):
         self.full_deck = self.deck + self.deck + self.deck + self.deck + self.deck + self.deck
         self.full_shuffle()
         self.full_deck_total = 312
@@ -50,6 +50,10 @@ class Dealer:
         self.threes = 24
         self.twos = 24
         self.aces = 24
+        player.running_total = 0
+        player.true_total = 0
+        player.card_total = 0
+
 
     def initial_deal(self, player):
         gf.remove_from_deck_count(self.full_deck[0], self, player)
