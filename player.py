@@ -16,9 +16,8 @@ class Player:
         self.dealer_win_count = 0
 
         # 2-6 = +1     7-9 = +0      10 and Ace = -1
-        self.bankroll = 5000 # starting amt of money
-        self.betting_unit = 5 # starting betting unit
-        self.betting_unit = 1 #betting unit (default 1)
+        self.bankroll = 10000 # starting amt of money
+        self.betAmount = 0;
         self.running_total = 0
         self.true_total = 0
         self.card_total = 0 #total cards accounted for so far
@@ -45,6 +44,7 @@ class Player:
 
     def ai_turn(self, dealer):
         stay = False
+        self.betAmount = gf.determine_bet_amt(self) #update how much is bet for the round
 
         decision = " "
         opponent_prob = gf.bust_prob(dealer.hand_total, dealer)
@@ -119,3 +119,4 @@ class Player:
                     dealer.winner = True
 
             gf.show_hands(self, dealer)
+
