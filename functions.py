@@ -212,14 +212,6 @@ def natural_winner(player, dealer):
         player.betAmount = player.betAmount * 1.5  # 3/2 Blackjack Pay
 
 
-    '''if(dealer.winner == True):
-        player.bankroll -= player.betAmount
-    elif(player.winner == True):
-        player.bankroll += (player.betAmount * 1.5)      #3/2 Blackjack PAY
-    # else nothing happens, TIE'''
-
-
-
 def check_true_blackjack(hand):
     for x in hand.cards_in_hand:
         if x[0] != 'C' and x[0] != 'S':
@@ -387,6 +379,7 @@ def det_true_count(player):
     player.true_total = (player.running_total / decks_remaining)
     if(player.true_total < 1): # true count must be 1 or higher
         player.true_total = 1
+    player.true_total = int(player.true_total)
 
 
 def count_cards(player,dealer): #currently displays card counting stats
@@ -399,12 +392,14 @@ def count_cards(player,dealer): #currently displays card counting stats
 
 
 def determine_bet_amt(player):
-    minBet = player.bankroll / 1000
-    maxBet = player.bankroll / 4
+    minBet = 5
+    maxBet = 100
     bettingUnit = player.bankroll / 1000
     det_true_count(player)
     optimalBet = bettingUnit * (player.true_total - 1)
     optimalBet = optimalBet * 1.25  # Bet 25% more as single player/hand
+    optimalBet = int(optimalBet)
+
 
     if(optimalBet > maxBet):
         return maxBet
