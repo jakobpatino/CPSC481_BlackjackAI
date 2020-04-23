@@ -27,10 +27,12 @@ def run_game():
                 if not player.winner:
                     gf.assign_winner(player, dealer)
         gf.declare_winner(player, dealer)
+        if player.bankroll > player.max_money:
+            player.max_money = player.bankroll
         gf.count_cards(player, dealer)
         gf.reset_round(player, dealer)
         round_num += 1
-        if round_num % 5 == 0:
+        if player.card_total > 225:
             dealer.reset_shuffle(player)
         if round_num == 100:
             in_progress = False
