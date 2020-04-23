@@ -411,9 +411,6 @@ def determine_bet_amt(player):
     betting_unit = player.bankroll / 1000
     det_true_count(player)
     optimal_bet = betting_unit * (player.true_total - 1)
-    # optimal_bet = optimal_bet * 1.25  # Bet 25% more as single player/hand
-    if optimal_bet > 4 * betting_unit:
-        optimal_bet = 4 * betting_unit
     optimal_bet = int(optimal_bet)
 
     if optimal_bet > max_bet:
