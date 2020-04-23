@@ -16,12 +16,12 @@ class Player:
         self.dealer_win_count = 0
 
         # 2-6 = +1     7-9 = +0      10 and Ace = -1
-        self.bankroll = 10000 # starting amt of money
-        self.betAmount = 0;
+        self.bankroll = 10000  # starting amt of money
+        self.betAmount = 0
         self.running_total = 0
         self.true_total = 0
-        self.card_total = 0 #total cards accounted for so far
-
+        self.card_total = 0  # total cards accounted for so far
+        self.max_money = 10000
 
     # temporary manual input turn
 
@@ -44,7 +44,7 @@ class Player:
 
     def ai_turn(self, dealer):
         stay = False
-        self.betAmount = gf.determine_bet_amt(self) #update how much is bet for the round
+        self.betAmount = gf.determine_bet_amt(self)  # update how much is bet for the round
 
         decision = " "
         opponent_prob = gf.bust_prob(dealer.hand_total, dealer)
@@ -67,34 +67,7 @@ class Player:
                 stay = True
                 print("STAY")
             elif self.assumption < 17:
-                '''if ai_prob < .5 and opponent_prob < .5:
-                    decision = gf.hit_or_dd(self.hand_total, self.hand_total_alt, self.true_assumption,
-                                            self.cards_in_hand, dealer, self)
-                    if decision == "DD":
-                        stay = True
-                    gf.calc_hand_total(self)
-                    if gf.check_bust(self.hand_total_alt):
-                        stay = True
-                        print("BUST")
-                        dealer.winner = True
-                elif ai_prob < .5 and opponent_prob > .5:
-                    if self.hand_total < 12:
-                        decision = gf.hit_or_dd(self.hand_total, self.hand_total_alt, self.true_assumption,
-                                                self.cards_in_hand, dealer, self)
-                        if decision == "DD":
-                            stay = True
-                        gf.calc_hand_total(self)
-                        if gf.check_bust(self.hand_total_alt):
-                            stay = True
-                            print("BUST")
-                            dealer.winner = True
-                    else:
-                        stay = True
-                        print("STAY")
-                else:
-                    stay = True
-                    print("STAY")'''
-                if ai_prob == 0 or (opponent_prob < .5 and ai_prob <= opponent_prob):
+                if ai_prob == 0 or (.5 > opponent_prob >= ai_prob):
                     decision = gf.hit_or_dd(self.hand_total, self.hand_total_alt, self.true_assumption,
                                             self.cards_in_hand, dealer, self)
                     if decision == "DD":
@@ -119,4 +92,3 @@ class Player:
                     dealer.winner = True
 
             gf.show_hands(self, dealer)
-
