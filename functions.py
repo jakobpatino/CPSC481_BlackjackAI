@@ -53,41 +53,41 @@ def remove_from_deck_count(card, dealer, player):
     dealer.full_deck_total -= 1
     if value == 1:
         dealer.aces -= 1
-        player.card_total +=1
-        player.running_total -=1;
+        player.card_total += 1
+        player.running_total -= 1
     elif value == 2:
         dealer.twos -= 1
-        player.card_total +=1
-        player.running_total +=1;
+        player.card_total += 1
+        player.running_total += 1
     elif value == 3:
         dealer.threes -= 1
-        player.card_total +=1
-        player.running_total +=1;
+        player.card_total += 1
+        player.running_total += 1
     elif value == 4:
         dealer.fours -= 1
-        player.card_total +=1
-        player.running_total +=1;
+        player.card_total += 1
+        player.running_total += 1
     elif value == 5:
         dealer.fives -= 1
-        player.card_total +=1
-        player.running_total +=1;
+        player.card_total += 1
+        player.running_total += 1
     elif value == 6:
         dealer.sixes -= 1
-        player.card_total +=1
-        player.running_total +=1;
+        player.card_total += 1
+        player.running_total += 1
     elif value == 7:
         dealer.sevens -= 1
-        player.card_total +=1
+        player.card_total += 1
     elif value == 8:
         dealer.eights -= 1
-        player.card_total +=1
+        player.card_total += 1
     elif value == 9:
         dealer.nines -= 1
-        player.card_total +=1
+        player.card_total += 1
     elif value == 10:
         dealer.tens -= 1
-        player.card_total +=1
-        player.running_total -=1;
+        player.card_total += 1
+        player.running_total -= 1
 
 
 def print_count(dealer):
@@ -168,8 +168,8 @@ def hit(hand, dealer, player):
     # print_count(dealer)
 
 
-def double_down(hand, dealer,player):
-    hit(hand, dealer,player)
+def double_down(hand, dealer, player):
+    hit(hand, dealer, player)
     player.betAmount = player.betAmount * 2
 
 
@@ -180,14 +180,14 @@ def check_naturals(player, dealer):
         player.natural = True
         if dealer.hole_down:
             dealer.hole_down = False
-            remove_from_deck_count(dealer.cards_in_hand[1], dealer,player)
+            remove_from_deck_count(dealer.cards_in_hand[1], dealer, player)
             # print_count(dealer)
             show_hands(player, dealer)
     if dealer.hand_total == 21:
         dealer.natural = True
         if dealer.hole_down:
             dealer.hole_down = False
-            remove_from_deck_count(dealer.cards_in_hand[1], dealer,player)
+            remove_from_deck_count(dealer.cards_in_hand[1], dealer, player)
             # print_count(dealer)
             show_hands(player, dealer)
 
@@ -207,9 +207,8 @@ def natural_winner(player, dealer):
     elif not player.natural and dealer.natural:
         dealer.winner = True
 
-
-    if(player.winner == True):
-        player.betAmount = player.betAmount * 1.5  # 3/2 Blackjack Pay
+    if player.winner is True:
+        player.betAmount = int(player.betAmount * 1.5)  # 3/2 Blackjack Pay
 
 
 def check_true_blackjack(hand):
@@ -228,9 +227,6 @@ def assign_winner(player, dealer):
         player.winner = True
     elif dealer.true_hand_total > player.hand_total:
         dealer.winner = True
-
-
-
 
 
 def declare_winner(player, dealer):
@@ -365,45 +361,64 @@ def hit_or_dd(hand, hand_alt, true_assumption, cards_in_hand, dealer, player):
     not_win_prob = calc_safe_hit(dealer, lowest_beat, bust) / calc_win_total(dealer, bust)
 
     if not_win_prob >= .5:
-        hit(cards_in_hand, dealer,player)
+        hit(cards_in_hand, dealer, player)
         decision = "HIT"
     else:
-        double_down(cards_in_hand, dealer,player)
+        double_down(cards_in_hand, dealer, player)
         decision = "DD"
         print("DOUBLE DOWN")
 
     return decision
 
+
+def decks_remain(player):
+    if player.card_total < 52:
+        return 6
+    elif player.card_total < 104:
+        return 5
+    elif player.card_total < 156:
+        return 4
+    elif player.card_total < 208:
+        return 3
+    elif player.card_total < 260:
+        return 2
+    else:
+        return 1
+
+
 def det_true_count(player):
-    decks_remaining = 6
+    decks_remaining = decks_remain(player)
     player.true_total = (player.running_total / decks_remaining)
-    if(player.true_total < 1): # true count must be 1 or higher
-        player.true_total = 1
-    player.true_total = int(player.true_total)
+    #if player.true_total < 1:  # true count must be 1 or higher
+        #player.true_total = 1
+    player.true_total = player.true_total
 
 
-def count_cards(player,dealer): #currently displays card counting stats
+def count_cards(player, dealer):  # currently displays card counting stats
     print("Card counts:")
     print("Card_Total: {} ".format(player.card_total))
     print("Running_Total: {} ".format(player.running_total))
-    det_true_count(player) # updates true total amount (currently no function calls it yet)
+    det_true_count(player)  # updates true total amount (currently no function calls it yet)
     print("True_Total: {} ".format(player.true_total))
     print("Bankroll:  {} ".format(player.bankroll))
+    print("Bet Amount: {} ".format(player.betAmount))
+    print("Max: {} ".format(player.max_money))
 
 
 def determine_bet_amt(player):
-    minBet = 5
-    maxBet = 100
-    bettingUnit = player.bankroll / 1000
+    min_bet = 5
+    max_bet = 1000
+    betting_unit = player.bankroll / 1000
     det_true_count(player)
-    optimalBet = bettingUnit * (player.true_total - 1)
-    optimalBet = optimalBet * 1.25  # Bet 25% more as single player/hand
-    optimalBet = int(optimalBet)
+    optimal_bet = betting_unit * (player.true_total - 1)
+    # optimal_bet = optimal_bet * 1.25  # Bet 25% more as single player/hand
+    if optimal_bet > 4 * betting_unit:
+        optimal_bet = 4 * betting_unit
+    optimal_bet = int(optimal_bet)
 
-
-    if(optimalBet > maxBet):
-        return maxBet
-    elif(optimalBet < minBet):
-        return minBet
+    if optimal_bet > max_bet:
+        return max_bet
+    elif optimal_bet < min_bet:
+        return min_bet
     else:
-        return optimalBet
+        return optimal_bet
