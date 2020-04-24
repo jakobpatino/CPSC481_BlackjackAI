@@ -68,7 +68,7 @@ class Dealer:
         self.cards_in_hand = []
 
     def dealer_move(self, player):
-        print("--Dealer Turn--")
+        print("----Dealer Turn----")
         gf.calc_hand_total(self)
         self.hole_down = False
         gf.remove_from_deck_count(self.cards_in_hand[1], self, player)
@@ -87,6 +87,7 @@ class Dealer:
                 self.true_hand_decided = True
         if gf.check_bust(self.true_hand_total):
             player.winner = True
+            print("BUST")
 
     def maybe_natural(self, player):
         card = self.cards_in_hand[0]
@@ -96,4 +97,3 @@ class Dealer:
             gf.remove_from_deck_count(self.cards_in_hand[1], self, player)
             # gf.print_count(self)
             gf.show_hands(player, self)
-
