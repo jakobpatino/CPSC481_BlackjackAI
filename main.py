@@ -40,6 +40,7 @@ def run_game():
     print(player.win_count)
     print(player.tie_count)
     print(player.dealer_win_count)
+    print("Bankroll:  {} ".format(player.bankroll))
 
 
 run_game()
