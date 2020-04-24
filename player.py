@@ -23,28 +23,11 @@ class Player:
         self.card_total = 0  # total cards accounted for so far
         self.max_money = 10000
 
-    # temporary manual input turn
-
-    '''def player_turn(self, dealer):
-        stay = False
-        print("--Player Turn--")
-        while not stay:
-            # action = input("h for hit, s for stay: ")
-            action = 's'
-            print(action)
-            if action == 'h':
-                gf.hit(self.cards_in_hand, dealer)
-                gf.calc_hand_total(self)
-                if gf.check_bust(self.hand_total_alt):
-                    stay = True
-                    dealer.winner = True
-            elif action == 's':
-                stay = True
-            gf.show_hands(self, dealer)'''
-
     def ai_turn(self, dealer):
         stay = False
         self.betAmount = gf.determine_bet_amt(self)  # update how much is bet for the round
+        print("Bankroll:  {} ".format(self.bankroll))
+        print("Bet Amount: {} ".format(self.betAmount))
 
         decision = " "
         opponent_prob = gf.bust_prob(dealer.hand_total, dealer)
@@ -60,10 +43,10 @@ class Player:
         else:
             self.true_assumption = self.assumption
 
-        print("--AI's Turn--")
+        print("----AI's Turn----")
 
         while stay is False:
-            if self.hand_total >= 17 and not self.hand_total > 21:
+            if 17 <= self.hand_total <= 21 or 17 <= self.hand_total_alt <= 21:
                 stay = True
                 print("STAY")
             elif self.assumption < 17:
@@ -92,3 +75,4 @@ class Player:
                     dealer.winner = True
 
             gf.show_hands(self, dealer)
+
