@@ -135,11 +135,11 @@ def calc_win_total(dealer, bust):
     return win_total
 
 
-def calc_safe_hit(dealer, num, bust):
+def calc_safe_hit(dealer, num):
     safe = 0
 
     if num == 10:
-        safe = calc_win_total(dealer, bust)
+        safe = dealer.full_deck_total
     elif num == 9:
         safe = dealer.nines + dealer.eights + dealer.sevens + dealer.sixes + dealer.fives\
                + dealer.fours + dealer.threes + dealer.twos + dealer.aces
@@ -235,11 +235,11 @@ def declare_winner(player, dealer):
         player.tie_count += 1
         # nothing happens to bankroll
     elif not player.winner and dealer.winner and not dealer.tie:
-        print("--DEALER WIN--")
+        print("----DEALER WIN----")
         player.dealer_win_count += 1
         player.bankroll -= player.betAmount
     elif player.winner and not dealer.winner and not dealer.tie:
-        print("--PLAYER WIN--")
+        print("----PLAYER WIN----")
         player.win_count += 1
         player.bankroll += player.betAmount
 
@@ -262,12 +262,11 @@ def reset_round(player, dealer):
 
 
 def show_hands(player, dealer):
-    print("player:" + str(player.cards_in_hand), ": Hand =",
-          player.hand_total)  # EDIT: temporary numeral value indicator for hand
+    print("player:" + str(player.cards_in_hand))
     if dealer.hole_down:
-        print("dealer: " + str(dealer.cards_in_hand[0]), ": Hand =", dealer.hand_total)
+        print("dealer: " + str(dealer.cards_in_hand[0]))
     else:
-        print("dealer" + str(dealer.cards_in_hand), ": Hand =", dealer.hand_total)
+        print("dealer" + str(dealer.cards_in_hand))
 
 
 def calc_ten_prob(dealer):
@@ -348,25 +347,21 @@ def bust_prob(hand, dealer):
 
 
 def hit_or_dd(hand, hand_alt, true_assumption, cards_in_hand, dealer, player):
-    bust = 22 - hand
     decision = " "
-    not_win_prob = 0.0
     lowest_beat = 0.0
+    beat_prediction = 0.0
 
-    if (hand == hand_alt or (hand == hand_alt and hand > 21)) and not hand > 21:
+    if hand_alt == 11 or hand_alt == 10 or hand_alt == 9:
         lowest_beat = true_assumption - hand_alt + 1
-    else:
-        lowest_beat = true_assumption - hand + 1
+        beat_prediction = calc_safe_hit(dealer, lowest_beat) / dealer.full_deck_total
 
-    not_win_prob = calc_safe_hit(dealer, lowest_beat, bust) / calc_win_total(dealer, bust)
-
-    if not_win_prob >= .5:
-        hit(cards_in_hand, dealer, player)
-        decision = "HIT"
-    else:
+    if beat_prediction >= .5:
         double_down(cards_in_hand, dealer, player)
         decision = "DD"
         print("DOUBLE DOWN")
+    else:
+        hit(cards_in_hand, dealer, player)
+        decision = "HIT"
 
     return decision
 
@@ -389,20 +384,18 @@ def decks_remain(player):
 def det_true_count(player):
     decks_remaining = decks_remain(player)
     player.true_total = (player.running_total / decks_remaining)
-    #if player.true_total < 1:  # true count must be 1 or higher
-        #player.true_total = 1
-    player.true_total = player.true_total
+    #if player.true_total < 2:  # true count must be 1 or higher
+        #player.true_total = 2
+    player.true_total = int(player.true_total)
 
 
-def count_cards(player, dealer):  # currently displays card counting stats
-    print("Card counts:")
+'''def count_cards(player, dealer):  # currently displays card counting stats
     print("Card_Total: {} ".format(player.card_total))
     print("Running_Total: {} ".format(player.running_total))
-    det_true_count(player)  # updates true total amount (currently no function calls it yet)
     print("True_Total: {} ".format(player.true_total))
     print("Bankroll:  {} ".format(player.bankroll))
     print("Bet Amount: {} ".format(player.betAmount))
-    print("Max: {} ".format(player.max_money))
+    print("Max: {} ".format(player.max_money))'''
 
 
 def determine_bet_amt(player):
@@ -419,3 +412,4 @@ def determine_bet_amt(player):
         return min_bet
     else:
         return optimal_bet
+
