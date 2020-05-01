@@ -1,7 +1,7 @@
 import random
 
 
-#checks to see if the dealer or the player busted(aka their total > 21)
+# checks to see if the dealer or the player busted(aka their total > 21)
 def check_bust(total):
     if total > 21:
         return True
@@ -9,7 +9,7 @@ def check_bust(total):
         return False
 
 
-#shuffles the entire deck and resets the deck back to zero
+# shuffles the entire deck
 def shuffle(deck):
     for x in range(0, 312):
         num = random.randint(0, 311)
@@ -20,12 +20,12 @@ def shuffle(deck):
     return deck
 
 
-#prints the round number
+# prints the round number
 def declare_round(round_num):
     print("Round #" + str(round_num))
 
 
-#reads the cards and sets them to a number so they can be used in the totals
+# reads the cards and return's their numerical value
 def card_values(card):
     value = card[-1]
     if value == '0' or value == 'J' or value == 'Q' or value == 'K':
@@ -52,8 +52,9 @@ def card_values(card):
         return 0
 
 
-#decrements from the total amount of cards and also from the individual values(7s, 10s)
-#also helps calculate the running total by -1 if you get an ace, face card or a 10; and +1 if its 2-6
+# decrements from the total amount of cards and also from the individual values(7s, 10s, etc.)
+# also helps calculate the running total by -1 if you get an ace, face card or a 10; and +1 if its 2-6
+# card counting: 2-6 = +1     7-9 = +0      10, Face and Ace = -1
 def remove_from_deck_count(card, dealer, player):
     value = card_values(card)
     dealer.full_deck_total -= 1
@@ -96,22 +97,7 @@ def remove_from_deck_count(card, dealer, player):
         player.running_total -= 1
 
 
-#prints the amount of cards left for each value
-def print_count(dealer):
-    print(dealer.full_deck_total)
-    print(dealer.tens)
-    print(dealer.nines)
-    print(dealer.eights)
-    print(dealer.sevens)
-    print(dealer.sixes)
-    print(dealer.fives)
-    print(dealer.fours)
-    print(dealer.threes)
-    print(dealer.twos)
-    print(dealer.aces)
-
-
-#calculates the total for the player and the dealer's hands
+# calculates the total for the player and the dealer's hands
 def calc_hand_total(hand):
     hand.hand_total = 0
     hand.hand_total_alt = 0
@@ -124,8 +110,8 @@ def calc_hand_total(hand):
             hand.hand_total_alt += card_values(x)
 
 
-#calculates the amount of cards that will help you not bust
-#EX: if a 6 will make you bust, it gets the amount of 1-5s
+# calculates the amount of cards that will help you win but not bust
+# EX: if a 6 will make you bust, it gets the amount of cards that are 1-5s
 def calc_win_total(dealer, bust):
     win_total = 0
 
@@ -145,8 +131,8 @@ def calc_win_total(dealer, bust):
     return win_total
 
 
-#calculates the chance(in percentage) that the next card drawn will be safe and not make you bust
-#EX: you have a 9, adds aces-9s
+# calculates the number of cards that, if drawn, will be safe and not make you bust
+# EX: you have a 9, adds aces-9s
 def calc_safe_hit(dealer, num):
     safe = 0
 
@@ -174,20 +160,19 @@ def calc_safe_hit(dealer, num):
     return safe
 
 
-#draws another card and adds it to the hand and subtracts it from the deck
+# draws another card and adds it to the hand and subtracts it from the deck
 def hit(hand, dealer, player):
     remove_from_deck_count(dealer.full_deck[0], dealer, player)
     hand.append(dealer.full_deck.pop(0))
-    # print_count(dealer)
 
 
-#hits but also increases the bet amount 2x
+# hits but also increases the bet amount 2x
 def double_down(hand, dealer, player):
     hit(hand, dealer, player)
     player.betAmount = player.betAmount * 2
 
 
-#checks to see if the player and/or the dealer have a 21 on their first cards drawn to them
+# checks to see if the player and/or the dealer have a 21 on their first cards drawn to them
 def check_naturals(player, dealer):
     calc_hand_total(player)
     calc_hand_total(dealer)
@@ -196,18 +181,17 @@ def check_naturals(player, dealer):
         if dealer.hole_down:
             dealer.hole_down = False
             remove_from_deck_count(dealer.cards_in_hand[1], dealer, player)
-            # print_count(dealer)
             show_hands(player, dealer)
     if dealer.hand_total == 21:
         dealer.natural = True
         if dealer.hole_down:
             dealer.hole_down = False
             remove_from_deck_count(dealer.cards_in_hand[1], dealer, player)
-            # print_count(dealer)
             show_hands(player, dealer)
 
 
-#checks for winning conditions if someone has a natural 21 such as a tie, dealer wins or a player win.
+# determines the winner when the player or dealer gets a natural 21 from their first hand.
+# if both people get 21 but one of them has a blackjack with actual black cards then that one overrules
 def natural_winner(player, dealer):
     if player.natural and dealer.natural:
         if check_true_blackjack(dealer) and check_true_blackjack(player):
@@ -227,15 +211,15 @@ def natural_winner(player, dealer):
         player.betAmount = int(player.betAmount * 1.5)  # 3/2 Blackjack Pay
 
 
-#checks if it’s a blackjack that has black cards
-#if both people get 21 but one of them has a blackjack with actual black cards then that one overrules
+# checks if it’s a blackjack that has black cards
 def check_true_blackjack(hand):
     for x in hand.cards_in_hand:
         if x[0] != 'C' and x[0] != 'S':
             return False
     return True
 
-#assigns a winner based off of the hand totals
+
+# assigns a winner based off of the hand totals
 def assign_winner(player, dealer):
     if player.hand_total > 21:
         dealer.winner = True
@@ -247,8 +231,8 @@ def assign_winner(player, dealer):
         dealer.winner = True
 
 
-#prints the outcome and adds to the win/loss/tie counter
-#also adds or subtracts the bet amount if you've won or loss
+# prints the outcome and adds to the win/loss/tie counter
+# also adds or subtracts the bet amount if you've won or loss
 def declare_winner(player, dealer):
     if not player.winner and not dealer.winner and dealer.tie:
         print("--TIE--")
@@ -264,7 +248,7 @@ def declare_winner(player, dealer):
         player.bankroll += player.betAmount
 
 
-#resets all necessary components to restart the round properly
+# resets all necessary components to restart the round properly
 def reset_round(player, dealer):
     dealer.reset_hands(player)
     player.winner = False
@@ -282,8 +266,8 @@ def reset_round(player, dealer):
     dealer.hole_down = True
 
 
-#prints the cards in the dealer/players hands.
-#if the dealer has a face or an ace, he only shows that first card(Hole_down)
+# prints the cards in the dealer/players hands.
+# if the dealer has a face or an ace, he only shows that first card(Hole_down)
 def show_hands(player, dealer):
     print("player:" + str(player.cards_in_hand))
     if dealer.hole_down:
@@ -292,73 +276,37 @@ def show_hands(player, dealer):
         print("dealer" + str(dealer.cards_in_hand))
 
 
-#probability of getting a 10/face card
+# probability of drawing a 10/face card
 def calc_ten_prob(dealer):
     probability = dealer.tens / dealer.full_deck_total
     return probability
 
 
-#probability of getting a 9
+# probability of drawing a 9 or higher
 def calc_nine_prob(dealer):
     probability = (dealer.nines + dealer.tens) / dealer.full_deck_total
     return probability
 
-#probability of getting a 8
+
+# probability of drawing a 8 or higher
 def calc_eight_prob(dealer):
     probability = (dealer.eights + dealer.nines + dealer.tens) / dealer.full_deck_total
     return probability
 
 
-#probability of getting a 7
+# probability of drawing a 7 or higher
 def calc_seven_prob(dealer):
     probability = (dealer.sevens + dealer.eights + dealer.nines + dealer.tens) / dealer.full_deck_total
     return probability
 
 
-#probability of getting a 6
+# probability of drawing a 6 or higher
 def calc_six_prob(dealer):
     probability = (dealer.sixes + dealer.sevens + dealer.eights + dealer.nines + dealer.tens) / dealer.full_deck_total
     return probability
 
 
-#probability of getting a 5
-def calc_five_prob(dealer):
-    probability = (dealer.fives + dealer.sixes + dealer.sevens + dealer.eights
-                   + dealer.nines + dealer.tens) / dealer.full_deck_total
-    return probability
-
-
-#probability of getting a 4
-def calc_four_prob(dealer):
-    probability = (dealer.fours + dealer.fives + dealer.sixes + dealer.sevens + dealer.eights
-                   + dealer.nines + dealer.tens) / dealer.full_deck_total
-    return probability
-
-
-#probability of getting a 3
-def calc_three_prob(dealer):
-    probability = (dealer.threes + dealer.fours + dealer.fives + dealer.sixes + dealer.sevens + dealer.eights
-                   + dealer.nines + dealer.tens) / dealer.full_deck_total
-    return probability
-
-
-#probability of getting a 2
-def calc_two_prob(dealer):
-    probability = (dealer.twos + dealer.threes + dealer.fours + dealer.fives + dealer.sixes + dealer.sevens
-                   + dealer.eights
-                   + dealer.nines + dealer.tens) / dealer.full_deck_total
-    return probability
-
-
-#probability of getting an ace
-def calc_aces_prob(dealer):
-    probability = (dealer.aces + dealer.twos + dealer.threes + dealer.fours + dealer.fives + dealer.sixes
-                   + dealer.sevens + dealer.eights
-                   + dealer.nines + dealer.tens) / dealer.full_deck_total
-    return probability
-
-
-#probability of busting on the next card
+# probability of busting on the next card
 def bust_prob(hand, dealer):
     bust = 22 - hand
     prob = 1.0
@@ -379,9 +327,10 @@ def bust_prob(hand, dealer):
     return prob
 
 
-#where the ai decides if it wants to hit or double down.
-#does this by calculating and weighing out the probability of the numbers needed
-#lowest beat is the lowest number you need to beat the dealer
+# where the ai decides if it wants to hit or double down.
+# does this by calculating and weighing out the probability of beating the dealer
+# if you are likely to beat them and not bust, you double down, else you just hit normally
+# lowest beat is the lowest number you need to beat the dealer
 def hit_or_dd(hand, hand_alt, true_assumption, cards_in_hand, dealer, player):
     decision = " "
     lowest_beat = 0.0
@@ -402,8 +351,8 @@ def hit_or_dd(hand, hand_alt, true_assumption, cards_in_hand, dealer, player):
     return decision
 
 
-#calculates the decks remaining based off the amount of cards remaining
-#used for calculating the running total(Used for betting decisions)
+# calculates the number of decks remaining based off the amount of cards remaining
+# used for calculating the running total(Used for betting decisions)
 def decks_remain(player):
     if player.card_total < 52:
         return 6
@@ -418,28 +367,18 @@ def decks_remain(player):
     else:
         return 1
 
-#calculates the true total
-#used to determine the bet amount
+
+# calculates the true total
+# used to determine the bet amount
 def det_true_count(player):
     decks_remaining = decks_remain(player)
     player.true_total = (player.running_total / decks_remaining)
-    #if player.true_total < 2:  # true count must be 1 or higher
-        #player.true_total = 2
     player.true_total = int(player.true_total)
 
 
-#used for testing purposes to display information
-'''def count_cards(player, dealer):  # currently displays card counting stats
-    print("Card_Total: {} ".format(player.card_total))
-    print("Running_Total: {} ".format(player.running_total))
-    print("True_Total: {} ".format(player.true_total))
-    print("Bankroll:  {} ".format(player.bankroll))
-    print("Bet Amount: {} ".format(player.betAmount))
-    print("Max: {} ".format(player.max_money))'''
-
-
-#decides what the optimal bet is
-#puts a min/max bet into place and also calculates the betting unit(what is safe to bet if you dont want to bet the min)
+# decides what the optimal bet is
+# puts a min/max bet into place (like a real casino) and also calculates the betting unit
+# (what is safe to bet if you don't want to bet the min)
 def determine_bet_amt(player):
     min_bet = 5
     max_bet = 1000
